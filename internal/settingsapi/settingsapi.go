@@ -28,7 +28,7 @@ import (
 // written.
 var Keys = []string{
 	// Appearance
-	"theme", "colorblind", "reduceMotion", "noBird", "lang", "uiFont", "codeFont",
+	"theme", "colorblind", "reduceMotion", "scrollChain", "noBird", "lang", "uiFont", "codeFont",
 	// the tray, the Dock and this computer
 	"tray", "dock", "dockWindow", "dockNever", "lightweight", "keepAwake", "keepAwakeDisplay",
 	"noWSLAgents", "sessionTerminal", "signInLinkOnly", "quitNoAsk",
@@ -206,6 +206,10 @@ func Merge(body []byte, cur settings.Settings, web bool) (settings.Settings, err
 	// nor how long a routing group's classifier is given (#2934)
 	if _, sent := fields["classifyTimeout"]; !sent {
 		in.ClassifyTimeout = cur.ClassifyTimeout
+	}
+	// nor whether nested content can continue scrolling the page
+	if _, sent := fields["scrollChain"]; !sent {
+		in.ScrollChain = cur.ScrollChain
 	}
 	// nor whether animations are stilled (#3813)
 	if _, sent := fields["reduceMotion"]; !sent {

@@ -64,11 +64,17 @@ function server(lang, state, posts) {
     if (url.pathname === "/wails/runtime.js") return route.fulfill({ contentType: "text/javascript", body: "export const Window = {};" });
     if (url.pathname === "/api/state") return json({ agents: [], profiles: [], settings: { lang, theme: "light" } });
     if (url.pathname === "/api/library") return json(lib(state.subagents));
+    if (url.pathname === "/api/library/subagents/claude") return json({ candidates: [
+      { file: "imported.md", hash: "preview-hash", subagent: sa("imported", "Imported reviewer", "Review code.", [], [], []), unsupported: ["model"] },
+      { file: "bad.md", error: "missing YAML front matter" },
+    ] });
     if (url.pathname.startsWith("/api/library/") && req.method() === "POST" && !url.pathname.endsWith("/reveal")) {
       const body = req.postDataJSON(), what = url.pathname.replace("/api/library/", "");
       posts.push({ what, body });
       if (what === "subagents/agents") state.subagents = state.subagents.map((x) => (x.name === body.name ? { ...x, agents: body.agents.filter((a) => a !== WSL) } : x));
       if (what === "subagents/save") state.subagents = [...state.subagents.filter((x) => x.name !== body.old), body.subagent];
+      if (what === "subagents/import-claude" && state.importWait) await state.importWait;
+      if (what === "subagents/import-claude") state.subagents.push(sa("imported", "Imported reviewer", "Review code.", [], [], []));
       if (what === "subagents/remove") state.subagents = state.subagents.filter((x) => x.name !== body.name);
       return json({ ...lib(state.subagents), result: { changed: ["claude"] } });
     }
@@ -272,6 +278,32 @@ for (const engine of (process.env.BROWSER ? [process.env.BROWSER] : ["chromium",
         await row("test-writer").waitFor();
 
         assert.deepEqual(posts, []);
+        await page.locator(".lib-import-claude").click();
+        const imp = page.locator(".lib-claude-import");
+        await imp.locator('input[type="checkbox"]').first().waitFor();
+        assert.equal(await imp.locator('input[type="checkbox"]').nth(1).isDisabled(), true);
+        assert.match(await imp.textContent(), /model/);
+        await imp.locator("button", { hasText: w("Cancel") }).click();
+        assert.deepEqual(posts, [], "preview and cancel write nothing");
+        await page.locator(".lib-import-claude").click();
+        await imp.locator('input[type="checkbox"]').first().check();
+        let releaseImport;
+        state.importWait = new Promise((resolve) => { releaseImport = resolve; });
+        await imp.locator("button.primary").click();
+        await imp.locator('input[type="checkbox"]').first().uncheck();
+        await imp.locator('input[type="checkbox"]').first().check();
+        assert.equal(await imp.locator("button.primary").isDisabled(), true, "pending import cannot be submitted twice");
+        await imp.locator("button", { hasText: w("Cancel") }).click();
+        await row("test-writer").click();
+        await ed.waitFor();
+        await ed.locator(".lib-subagentdescin").fill("Keep my unsaved edit");
+        const completed = page.waitForResponse((r) => r.url().endsWith("/api/library/subagents/import-claude"));
+        releaseImport();
+        await completed;
+        await page.waitForTimeout(100);
+        assert.equal(await ed.isVisible(), true, "old import must not close a newer editor");
+        assert.equal(await ed.locator(".lib-subagentdescin").inputValue(), "Keep my unsaved edit");
+        assert.deepEqual(posts.shift(), { what: "subagents/import-claude", body: { selections: [{file: "imported.md", hash: "preview-hash"}] } });
         assert.deepEqual(errors, []);
         await ctx.close();
       });

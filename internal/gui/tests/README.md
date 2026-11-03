@@ -2661,3 +2661,11 @@ hasn't.
 ```sh
 node --test internal/gui/tests/nav-timeout.test.cjs
 ```
+
+## Optional content scroll chaining
+
+`inner-scroll-chain.test.cjs` checks real wheel movement inside content and past
+both ends, including the old Safari fallback and protected menus, dialogs and
+text editors. `scroll-chain-setting.test.cjs` checks opt-in, saving and reload
+in all five languages and narrow/wide windows. Run beside
+`inner-scroll-contain.test.cjs`, which keeps the existing default contract.

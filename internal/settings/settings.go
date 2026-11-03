@@ -50,6 +50,9 @@ type Settings struct {
 	// Motion does, for a computer or phone that the moving Routing page
 	// keeps busy (#3813).
 	ReduceMotion bool `json:"reduceMotion,omitempty"`
+	// ScrollChain lets content lists pass the wheel to their page at their ends.
+	// Dialogs, menus and editors keep their own scrolling.
+	ScrollChain bool `json:"scrollChain,omitempty"`
 	// NoBird keeps magpie's bird off the loading skeletons and the
 	// Plugins page's README, for a small server where its watch for them
 	// is work enough to matter (Yayoi_no_yume on X). Off means shown.

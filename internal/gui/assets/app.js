@@ -19235,6 +19235,7 @@ function applyPrefs(s, rate) {
       if (applyPrefs.ready) { tintPanel(450); tintTitleBar(460); }
     }
   }
+  if (s.scrollChain) root.dataset.scrollChain = "1"; else delete root.dataset.scrollChain;
   if (!!s.reduceMotion !== (root.dataset.motion === "reduce")) window.holdStill(!!s.reduceMotion);
   if (!!s.noBird !== birdOff()) {
     if (s.noBird) root.dataset.bird = "off"; else delete root.dataset.bird;
@@ -19687,6 +19688,7 @@ function renderSettings() {
   $("#colorblindSegs").replaceChildren(segs([["off", t("Off")], ["on", t("On")]], s.colorblind ? "on" : "off", (v) => savePrefs({ ...keep, colorblind: v === "on" })));
   $("#reduceMotionSegs").title = t("Animations stand still, as with the system's Reduce Motion, so magpie keeps the computer less busy");
   $("#reduceMotionSegs").replaceChildren(segs([["off", t("Off")], ["on", t("On")]], s.reduceMotion ? "on" : "off", (v) => savePrefs({ ...keep, reduceMotion: v === "on" })));
+  $("#scrollChainSegs").replaceChildren(segs([["off", t("Off")], ["on", t("On")]], s.scrollChain ? "on" : "off", (v) => savePrefs({ ...keep, scrollChain: v === "on" })));
   $("#birdSegs").title = t("magpie's bird hops on what is still loading; Off keeps it away, and magpie stops looking for it");
   $("#birdSegs").replaceChildren(segs([["off", t("Off")], ["on", t("On")]], s.noBird ? "off" : "on", (v) => savePrefs({ ...keep, noBird: v === "off" })));
   renderLangPick(s, keep);
@@ -22633,7 +22635,7 @@ function dockChoice(s) {
 
 // prefsKeep is what the settings page sends of s, all of it each time.
 function prefsKeep(s) {
-  return { theme: s.theme, colorblind: !!s.colorblind, reduceMotion: !!s.reduceMotion, noBird: !!s.noBird, lang: s.lang, tray: s.tray, dock: !!s.dock, dockWindow: !!s.dockWindow, dockNever: !!s.dockNever, lightweight: s.lightweight, keepAwake: !!s.keepAwake, keepAwakeDisplay: !!s.keepAwakeDisplay, noWSLAgents: !!s.noWSLAgents, quitNoAsk: !!s.quitNoAsk, proxy: s.proxy || "",
+  return { theme: s.theme, colorblind: !!s.colorblind, reduceMotion: !!s.reduceMotion, scrollChain: !!s.scrollChain, noBird: !!s.noBird, lang: s.lang, tray: s.tray, dock: !!s.dock, dockWindow: !!s.dockWindow, dockNever: !!s.dockNever, lightweight: s.lightweight, keepAwake: !!s.keepAwake, keepAwakeDisplay: !!s.keepAwakeDisplay, noWSLAgents: !!s.noWSLAgents, quitNoAsk: !!s.quitNoAsk, proxy: s.proxy || "",
     sessionTerminal: s.sessionTerminal || "",
     uiFont: s.uiFont || null, codeFont: s.codeFont || null,
     otel: s.otel || {},
@@ -22785,7 +22787,13 @@ function givesBack(e, dir) {
   for (const p of back) p.v.scrollTop += p.by;
 }
 // marks a box that scrolls in a page while it overflows (.holds, app.css)
-const holds = (e) => { for (let b = e.target; b instanceof Element && !b.matches(".view,body"); b = b.parentNode) b.classList.toggle("holds", b.scrollHeight > b.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(b).overflowY)); };
+const holds = (e) => {
+  for (let b = e.target; b instanceof Element && !b.matches(".view,body"); b = b.parentNode) {
+    b.classList.toggle("holds", b.scrollHeight > b.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(b).overflowY));
+    // Only page content opts in: overlays and text editors keep the wheel.
+    b.classList.toggle("chains", !!b.closest(".view") && !b.closest(".pop,.modal,dialog,[role=dialog],[role=menu],.sidebar,textarea,[contenteditable],.cm-editor,.monaco-editor"));
+  }
+};
 addEventListener("pointerover", holds, { capture: true, passive: true });
 let touchY = null;
 addEventListener("wheel", (e) => { holds(e); flings(); givesBack(e, Math.sign(e.deltaY)); }, { capture: true, passive: true });

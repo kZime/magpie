@@ -9,6 +9,7 @@
   var theme = asked || (saved && saved !== "system" ? saved : "");
   if (theme) document.documentElement.dataset.theme = theme;
   if (prefs && prefs.colorblind) document.documentElement.dataset.colorblind = "1";
+  if (prefs && prefs.scrollChain) document.documentElement.dataset.scrollChain = "1";
   if (prefs && prefs.reduceMotion) document.documentElement.dataset.motion = "reduce";
   if (prefs && prefs.noBird) document.documentElement.dataset.bird = "off";
   if (prefs) document.documentElement.style.setProperty("--zoom", prefs.web ? 1 : (prefs.textSize || 100) / 100);

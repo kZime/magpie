@@ -4,6 +4,8 @@
 // works. {name} slots are filled by t(str, vars).
 const I18N = {
   zh: {
+    "Continue scrolling the page": "继续滚动页面",
+    "At the ends of a content list, keep scrolling the page. Dialogs, menus and text editors stay separate.": "内容列表到达边界后，继续滚动页面。对话框、菜单和文本编辑器保持独立滚动。",
     "Scroll to top": "回到顶部",
     "Scroll to bottom": "回到底部",
     "Claude Code runs as": "Claude Code 运行方式",
@@ -4492,6 +4494,8 @@ const I18N = {
     "This report is no longer kept: magpie keeps the last 5.": "这份报告已经不在了：magpie 只保留最近 5 份。",
   },
   "zh-TW": {
+    "Continue scrolling the page": "繼續捲動頁面",
+    "At the ends of a content list, keep scrolling the page. Dialogs, menus and text editors stay separate.": "內容清單到達邊界後，繼續捲動頁面。對話框、選單和文字編輯器保持獨立捲動。",
     "Scroll to top": "回到頂部",
     "Scroll to bottom": "回到底部",
     "Claude Code runs as": "Claude Code 執行方式",
@@ -8965,6 +8969,8 @@ const I18N = {
     "This report is no longer kept: magpie keeps the last 5.": "這份報告已經不在了：magpie 只保留最近 5 份。",
   },
   ja: {
+    "Continue scrolling the page": "ページのスクロールを続ける",
+    "At the ends of a content list, keep scrolling the page. Dialogs, menus and text editors stay separate.": "コンテンツ一覧の端でページのスクロールを続けます。ダイアログ、メニュー、テキストエディターは独立したままです。",
     "Scroll to top": "一番上へ",
     "Scroll to bottom": "一番下へ",
     "Claude Code runs as": "Claude Code の実行方式",
@@ -13440,6 +13446,8 @@ const I18N = {
     "This report is no longer kept: magpie keeps the last 5.": "このレポートはもう残っていません。magpie は最新の 5 件だけを保存します。",
   },
   de: {
+    "Continue scrolling the page": "Seite weiter scrollen",
+    "At the ends of a content list, keep scrolling the page. Dialogs, menus and text editors stay separate.": "Am Ende einer Inhaltsliste die Seite weiter scrollen. Dialoge, Menüs und Texteditoren bleiben getrennt.",
     "Scroll to top": "Nach ganz oben",
     "Scroll to bottom": "Nach ganz unten",
     "Claude Code runs as": "Claude Code läuft als",

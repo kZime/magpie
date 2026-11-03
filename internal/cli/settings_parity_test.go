@@ -163,6 +163,7 @@ var cliForRoute = map[string]string{
 }
 
 var notYet = map[string]string{
+	"GET /api/library/subagents/claude":          L,  // library.go: preview local Claude subagents before import
 	"POST /api/agent-fast":                       A,  // agent_models.go
 	"POST /api/agent-models/{id}":                A,  // agent_models.go
 	"GET /api/agents/cli":                        A,  // api.go

@@ -988,6 +988,9 @@ func Handler(w Windows, gw *gateway.Server) http.Handler {
 		if s.Colorblind {
 			boot["colorblind"] = true
 		}
+		if s.ScrollChain {
+			boot["scrollChain"] = true
+		}
 		if s.ReduceMotion {
 			boot["reduceMotion"] = true
 		}

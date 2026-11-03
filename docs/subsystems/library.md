@@ -88,6 +88,24 @@ agents RTK, a CLI that cuts shell output down before the model reads it.
 - A read of the page (`Read`, `Glance`) follows the links on the way to a few hundred paths, most of them many times over: each agent's skills folder for each skill, CC Switch's and the shared folder for each source. While the read holds the lock, `resolve` looks at each entry on the way once (`lookPart` in [`linkmemo.go`](../../internal/library/linkmemo.go)): one `Lstat`, and a `Readlink` for a link. Nothing is kept past the read, so a link made or moved on disk between two visits shows on the second. An entry that couldn't be looked at for another reason than its not being there is unknown and looked at again. One read had taken ~10,000 looks; on oxyuan's Windows machine that was ~1.3s a visit (#1771).
 - Skills installed together (`InstallSkills`, `InstallMarketSkill`, `AddNewSkills`, through `installFrom` and `installChange`) install each on its own. One the library lists from the same source, or a folder in the library's own skills folder holding exactly that skill's files (left by an install that stopped before the library was saved), is had already and goes in `Result.Had`. Its files are never written, so the user's edits stay. Another skill by that name, listed or only in the folder, is left as it is. One from GitHub or another git repository then goes in beside it under a name of its own (mora1n on Discord: anthropics/skills' and openai/skills' `skill-creator` are two skills): the name with its source's owner added (`skill-creator-openai`), then owner and repository, the repository, then a number, at most 64 bytes (`freeSkillName` in [`skill_beside.go`](../../internal/library/skill_beside.go)). The library's copy of its `SKILL.md` gives that name too (`nameSkill`, only the front matter's top-level `name:` line), so an agent never sees two skills by one name; `Skill.Called` keeps the name its `SKILL.md` gave. Its hash is of the renamed copy, and a check or update compares what it fetches named the same way (`fetchedHash`), so it reads as unchanged and an update keeps the name. Being had is decided by source, not name (`hadSkill`): the same source under any name here, or a skill with no source (taken in from an agent's folder) by that name holding the very same files. A probe's candidate says which (`Candidate.Have`, `Candidate.As`), the page and the TUI show "in the library as …" or "adds as …", the market's had check matches by name only a skill with no repository (`haveSkill`), and the new-skills check no longer drops a skill because its name is taken. A skill already in the library keeps its name, folder and links; nothing is renamed after the fact. A folder of the user's own is linked as it is, so its `SKILL.md` can't be named apart: one by a taken name, or a folder that can't be read, goes in `Result.Skipped` with why (`TestSameNameFromAnotherSourceGoesInBeside`, `TestSameFilesByNameAreHad`, `TestInstallSetPutsAnotherByTheSameNameBeside`, `TestAddFromLibraryFolderKeepsIt`). The rest are installed and named in `Result.Installed`. Only when nothing was installed or had does the change fail, with the first reason.
 
+## Importing Claude Code subagents
+
+The Subagents tab can preview `.md` definitions in `claudeDir()/agents`
+(`CLAUDE_CONFIG_DIR` when set). `PreviewClaudeSubagents` in
+[`subagents_import.go`](../../internal/library/subagents_import.go) reads only:
+invalid files and duplicate library names are shown as errors. Symlinks and
+oversized files are refused. YAML name, description, skills and mcpServers,
+and the Markdown prompt, are copied; unsupported fields are listed before
+selection and remain only in the untouched original file. This is a copy of
+the common fields, not a lossless migration of Claude-specific behavior.
+
+Import re-reads each selected basename and compares the preview hash. A stale
+file, invalid file or duplicate refuses the whole batch before saving. Imported
+entries select no target agents: importing and later removing that library
+entry do not adopt or delete the Claude original. The user can choose targets
+later using the existing editor. Preview and Cancel never write. Project-level
+agent folders and inline MCP definitions are not imported by this first version.
+
 ## Verification
 
 ```sh

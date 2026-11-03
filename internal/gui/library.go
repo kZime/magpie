@@ -143,6 +143,14 @@ func revealable(v *library.View) []string {
 
 func libraryRoutes(mux *http.ServeMux, w Windows) {
 	browserRoutes(mux, w)
+	mux.HandleFunc("GET /api/library/subagents/claude", func(rw http.ResponseWriter, r *http.Request) {
+		candidates, err := library.PreviewClaudeSubagents()
+		if err != nil {
+			fail(rw, err)
+			return
+		}
+		writeJSON(rw, map[string]any{"candidates": candidates})
+	})
 	mux.HandleFunc("GET /api/library", func(rw http.ResponseWriter, r *http.Request) {
 		v, err := libraryRead(nil, r.URL.Query().Get("glance") == "1")
 		if err != nil {
@@ -455,17 +463,18 @@ func libraryRoutes(mux *http.ServeMux, w Windows) {
 			Server library.Server
 			Hook   library.Hook // a hook saved (#1790)
 			// a subagent saved (#2283)
-			Subagent library.Subagent
-			Agent    string            // the agent whose own skill is in the library's way
-			App      string            // the app the MCP hub is added to (servers/hub-open)
-			Note     string            // what the MCP router says of itself (servers/hub-note)
-			ID       string            // a market server's, or a market skill's in its repository
-			Values   map[string]string // what a market server needs
-			Dir      string            // a project's folder
-			Copy     bool              // a project gets copies, not links
-			Keep     bool              // a project removed keeps what magpie put in it
-			On       bool              // every skill or server given to the agents, or taken from them
-			How      string            // link or copy: how skills are given to Agent, or to every agent with none (#896)
+			Subagent   library.Subagent
+			Selections []library.ClaudeSubagentSelection
+			Agent      string            // the agent whose own skill is in the library's way
+			App        string            // the app the MCP hub is added to (servers/hub-open)
+			Note       string            // what the MCP router says of itself (servers/hub-note)
+			ID         string            // a market server's, or a market skill's in its repository
+			Values     map[string]string // what a market server needs
+			Dir        string            // a project's folder
+			Copy       bool              // a project gets copies, not links
+			Keep       bool              // a project removed keeps what magpie put in it
+			On         bool              // every skill or server given to the agents, or taken from them
+			How        string            // link or copy: how skills are given to Agent, or to every agent with none (#896)
 			// Replace updates a skill changed here all the same, its
 			// changed version kept with the backups (#1449)
 			Replace bool
@@ -527,6 +536,8 @@ func libraryRoutes(mux *http.ServeMux, w Windows) {
 			res, err = library.RemoveHooks([]string{in.Name})
 		case "hooks/remove-all":
 			res, err = library.RemoveHooks(in.Names)
+		case "subagents/import-claude":
+			res, err = library.ImportClaudeSubagents(in.Selections)
 		case "subagents/save":
 			res, err = library.SaveSubagent(in.Old, in.Subagent)
 		case "subagents/agents":

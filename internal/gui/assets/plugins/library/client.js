@@ -3193,6 +3193,7 @@ magpie.plugin("library", (ctx) => {
 
   function renderSubagents(body) {
     body.append(intro(t("A subagent is a helper with a prompt of its own that an agent hands a task to — a reviewer, a test writer. Add it once and magpie writes it into each agent you pick, as that agent's own subagent file.")));
+    body.append(button(t("Import from Claude Code"), "lib-import-claude", previewClaudeSubagents));
     const all = subagentAgents();
     const subs = lib.subagents || [];
     pickingFor("subagents", []);
@@ -3217,6 +3218,50 @@ magpie.plugin("library", (ctx) => {
     if (subs.some((s) => s.agents?.includes("cursor"))) body.append(el("p", "lib-aside lib-subagents-cursor", t("The Cursor app has these subagents; its cursor-agent command reads only a project's own .cursor/agents.")));
     const skip = all.filter((a) => subagentAgentOf(a.id).no);
     if (skip.length) body.append(el("p", "lib-aside lib-subagents-no", t("magpie can't give subagents to {agents} yet: their chips are greyed, and say why.", { agents: skip.map((a) => a.name).join(", ") })));
+  }
+
+  async function previewClaudeSubagents() {
+    const ed = el("div", "editor lib-editor lib-claude-import");
+    ed.append(el("b", "", t("Import from Claude Code")), el("p", "hint", t("Copies into the library only. Original files stay untouched. Choose target agents afterwards.")));
+    const rows = el("div"), err = el("div", "editor-error");
+    const selected = new Map();
+    let pending = false;
+    const save = button(t("Import"), "primary", async () => {
+      if (pending || !selected.size) return;
+      pending = true;
+      save.disabled = true;
+      try {
+        take(await api("library/subagents/import-claude", { selections: [...selected.values()] }));
+        if (ed.isConnected) { closeLibModal(true); render(); }
+        else if (!modal) render();
+      } catch (e) { if (ed.isConnected) err.textContent = e.message; }
+      finally { pending = false; save.disabled = !selected.size; }
+    });
+    save.disabled = true;
+    const bar = el("div", "bar");
+    bar.append(el("span", "grow"), button(t("Cancel"), "", closeLibModal), save);
+    ed.append(rows, err, bar);
+    modal = { dirty: () => false };
+    openLib(ed);
+    try {
+      const result = await api("library/subagents/claude");
+      if (!ed.isConnected) return;
+      if (!result.candidates.length) rows.append(el("p", "hint", t("No Claude Code subagents found")));
+      for (const c of result.candidates) {
+        const row = el("label", "row"), pick = el("input");
+        pick.type = "checkbox"; pick.disabled = !!c.error;
+        pick.onchange = () => {
+          if (pick.checked) selected.set(c.file, { file: c.file, hash: c.hash }); else selected.delete(c.file);
+          save.disabled = pending || !selected.size;
+        };
+        const text = el("div", "who");
+        text.append(el("div", "name", c.subagent?.name || c.file));
+        if (c.subagent) text.append(el("div", "sub", c.subagent.description));
+        if (c.error) text.append(el("div", "editor-error", c.error));
+        if (c.unsupported?.length) text.append(el("div", "hint", t("Not imported: {fields}. These fields stay in the original file.", { fields: c.unsupported.join(", ") })));
+        row.append(pick, text); rows.append(row);
+      }
+    } catch (e) { if (ed.isConnected) err.textContent = e.message; }
   }
 
   function subagentRow(s, all) {

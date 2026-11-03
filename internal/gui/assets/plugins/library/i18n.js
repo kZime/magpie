@@ -2,6 +2,11 @@
 // kernel adds them to i18n.js's (magpie.strings).
 magpie.strings({
   zh: {
+    "Import from Claude Code": "从 Claude Code 导入",
+    "Copies into the library only. Original files stay untouched. Choose target agents afterwards.": "仅复制到资源库，不修改原文件。导入后再选择目标 Agent。",
+    "No Claude Code subagents found": "未找到 Claude Code 子代理",
+    "Not imported: {fields}. These fields stay in the original file.": "不导入：{fields}。这些字段保留在原文件中。",
+
     "Show more ({n} left)": "显示更多（还有 {n} 个）",
     "Not through the router": "不经过路由",
     "Each agent is given its own entry for it, as with the MCP router off": "每个 Agent 各自有它的条目，和关掉 MCP 路由时一样",
@@ -765,6 +770,11 @@ magpie.strings({
     "{agents} can be changed once it runs.": "{agents} 要等它运行后才能修改。",
   },
   "zh-TW": {
+    "Import from Claude Code": "從 Claude Code 匯入",
+    "Copies into the library only. Original files stay untouched. Choose target agents afterwards.": "僅複製到資源庫，不修改原始檔案。匯入後再選擇目標 Agent。",
+    "No Claude Code subagents found": "找不到 Claude Code 子代理",
+    "Not imported: {fields}. These fields stay in the original file.": "不匯入：{fields}。這些欄位保留在原始檔案中。",
+
     "Show more ({n} left)": "顯示更多（還有 {n} 個）",
     "Not through the router": "不經過路由",
     "Each agent is given its own entry for it, as with the MCP router off": "每個 Agent 各自有它的條目，和關掉 MCP 路由時一樣",
@@ -1528,6 +1538,11 @@ magpie.strings({
     "{agents} can be changed once it runs.": "{agents} 要等它執行後才能修改。",
   },
   ja: {
+    "Import from Claude Code": "Claude Code からインポート",
+    "Copies into the library only. Original files stay untouched. Choose target agents afterwards.": "ライブラリにのみコピーします。元のファイルは変更しません。対象エージェントは後で選択できます。",
+    "No Claude Code subagents found": "Claude Code のサブエージェントが見つかりません",
+    "Not imported: {fields}. These fields stay in the original file.": "インポートしない項目：{fields}。元のファイルに残ります。",
+
     "Show more ({n} left)": "さらに表示（残り {n} 件）",
     "Not through the router": "ルーターを通さない",
     "Each agent is given its own entry for it, as with the MCP router off": "各エージェントに個別のエントリを渡します（MCP ルーターがオフのときと同じ）",
@@ -2291,6 +2306,11 @@ magpie.strings({
     "{agents} can be changed once it runs.": "{agents} は起動後に変更できます。",
   },
   de: {
+    "Import from Claude Code": "Aus Claude Code importieren",
+    "Copies into the library only. Original files stay untouched. Choose target agents afterwards.": "Kopiert nur in die Bibliothek. Originaldateien bleiben unverändert. Ziel-Agenten anschließend auswählen.",
+    "No Claude Code subagents found": "Keine Claude-Code-Unteragenten gefunden",
+    "Not imported: {fields}. These fields stay in the original file.": "Nicht importiert: {fields}. Diese Felder bleiben in der Originaldatei.",
+
     "Show more ({n} left)": "Mehr zeigen (noch {n})",
     "Not through the router": "Nicht über den Router",
     "Each agent is given its own entry for it, as with the MCP router off": "Jeder Agent bekommt einen eigenen Eintrag dafür, wie bei ausgeschaltetem MCP-Router",
