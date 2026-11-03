@@ -19759,9 +19759,7 @@ function renderSettings() {
   renderAutoResetOwn(s);
   renderWarmNow("codex", s.codexUsers, "#warmNowRow");
   renderWarmNow("claude", s.claudeUsers, "#claudeWarmNowRow");
-  // each built-in vendor's daily check-in, its tab shown while one of its
-  // accounts is signed in (#694, #811): its switch, how each account went,
-  // and under it each account's own (#1902)
+  // Check-in tabs for signed-in vendors (#694, #811), with account rows (#1902).
   $("#warmTabs").setAttribute("aria-label", t("Warm-up and check-in"));
   for (const [id, k, say, as] of [
     ["wb", "workbuddy", t("Claims each signed-in China account's check-in credits once a day"), t("As pressing 签到 in WorkBuddy does")],
@@ -19777,8 +19775,7 @@ function renderSettings() {
     list.append(...checkinAccountRows(s, id === "wb" ? "" : id), ...checkinNowRow(s, id === "wb" ? "" : id));
   }
   setWarmTab(warmTab);
-  // and the plugins that check in themselves, a row each, their tab shown
-  // while one is signed in
+  // Signed-in plugins get check-in tabs too.
   renderPluginCheckins(s);
   renderTrayUsage(s, keep);
   renderProxy(s, keep);
@@ -19813,15 +19810,13 @@ function renderSettings() {
     return r;
   };
   renderUpdate(row(t("Version"), "", s.version));
-  // what changed in this version, and in one waiting; a build from source
-  // has no notes
+  // Release notes for versions, not source builds.
   if (/^v?\d+\.\d+\.\d+$/.test(s.version || "")) {
     const notes = el("button", "text", t("Open"));
     notes.onclick = () => openWhatsNew(notes);
     row(t("What's new"), t("The release notes since the last update"), "", notes).classList.add("whatsnew-row");
   }
-  // the header's Update pill, kept away for good or for one version; the
-  // version row above still says what is out and offers it
+  // Hiding the Update pill leaves the version row's offer intact.
   const pill = row(t("Update button"), t("Shows in the header when a newer magpie is out"),
     "", segs([["off", t("Off")], ["on", t("On")]], s.noUpdatePill ? "off" : "on", (v) => savePrefs({ ...keep, noUpdatePill: v === "off" }).then(renderUpdateBadge)));
   pill.classList.add("update-pill-row");
@@ -19834,20 +19829,15 @@ function renderSettings() {
       pill.querySelector(".val").prepend(back);
     }, () => {});
   }
-  // whether magpie asks for a newer version by itself, and how often;
-  // off, only the version row's Check asks (#472)
+  // Automatic checks; off leaves only the version row's Check (#472).
   row(t("Automatic updates"), t("Checks for a newer magpie by itself"),
     "", segs([["off", t("Off")], ["on", t("On")]], s.noAutoUpdate ? "off" : "on", (v) => savePrefs({ ...keep, noAutoUpdate: v === "off" }))).classList.add("update-auto-row");
-  // kept in place while off, dimmed, its height the same (a row or a line
-  // taken away would shorten the page under the click), for when they are
-  // turned on again
+  // Keep the dimmed row's height while off, so the page stays under the click.
   row(t("Check every"), s.noAutoUpdate ? t("While automatic updates are on") : t("How often magpie looks for a newer version"), "",
     segs(UPDATE_EVERY.map((m) => [m, m < 60 ? t("{n} min", { n: m }) : t("{n} h", { n: m / 60 })]), s.updateEvery || 360,
       (updateEvery) => savePrefs({ ...keep, updateEvery }))).classList.add("update-every-row", ...(s.noAutoUpdate ? ["off"] : []));
-  // which versions an update offers (ssharpcc on X): every one as it comes
-  // out, or Stable, one a week and an urgent one at once, chosen by the
-  // update feed. It holds for the version row's Check too, so it stays lit
-  // with automatic updates off.
+  // Stable: weekly and urgent releases per the feed (ssharpcc on X).
+  // Applies to manual Check too; stays lit with automatic updates off.
   row(t("Update channel"), s.updateChannel === "stable"
     ? t("One version a week, out for three days first, and urgent fixes at once. What's new lists every change since yours")
     : t("Every version as soon as it is out"), "",
